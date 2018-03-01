@@ -1,0 +1,44 @@
+version: '2'
+
+services:
+  app-base:
+    image: bsao/app-base
+    build:
+        context: ./
+        dockerfile: docker/app-base/Dockerfile
+  spark-slave:
+      image: bsao/spark-slave
+      build:
+          context: ./
+          dockerfile: docker/slave/Dockerfile
+      depends_on:
+      - app-base
+      - spark-master
+      links:
+      - spark-master:spark-master
+      environment:
+        MASTER_PORT_7077_TCP_ADDR: spark-master
+  spark-master:
+      image: bsao/spark-master
+      build:
+          context: ./
+          dockerfile: docker/master/Dockerfile
+      depends_on:
+      - app-base
+      ports:
+      - "8080:8080"
+      - "7077:7077"
+      - "4040:4040"
+  app-dev:
+    image: bsao/app-dev
+    depends_on:
+        - app-base
+    build:
+        context: ./
+        dockerfile: docker/app-dev/Dockerfile
+    stdin_open: true
+    tty: true
+    command: bash
+    working_dir: /app
+    volumes:
+    - ./:/app
