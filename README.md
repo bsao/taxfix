@@ -5,7 +5,13 @@ Taxfix
 
 1. Download and install the lastest version of Docker
 2. Clone the project
-3. Fill the missing values in the luigi.cfg with s3 bucket and redshift data ( must be create in your account )/
+3. Fill up the missing values in the luigi.cfg
+    ~~~~
+    s3 bucket (insert some files inside a folder ("/events") as sample sent)
+    ~~~~
+    ~~~~
+    redshift data ( must be create in your account )
+    ~~~~
 4. Build the images:
     ~~~~
     docker-compose build
@@ -13,12 +19,16 @@ Taxfix
 5. To execute tests and developing machine
     ~~~~
     docker-compose up --force-recreate -d app-dev
-    docker-compose exec app-dev bash
     ~~~~
 
     Execute tests:
     ~~~~
-    make test
+    docker-compose exec app-dev make test
+    ~~~~
+
+    Execute pipeline:
+    ~~~~
+    docker-compose exec app-dev luigi --module taxfix.tasks.DimensionLoader
     ~~~~
 
     To stop developer machine:
